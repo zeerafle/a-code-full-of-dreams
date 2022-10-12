@@ -1,81 +1,91 @@
 // nilai konstan
 const size = 600;
-const center = size / 2;
+const center = 0; // untuk pusat lingkaran awalnya di 0,0
 const radius = 86;
-
-// deklarasi variabel img
-let img;
+var yHillsBottom = 600 + 90; // posisi awal bukit dibawah (diluar frame)
+var yHillsTop = 0 - 90; // posisi awal 
+var rate = 7;
 
 function setup() {
   createCanvas(size, size); // buat ukuran kotak
-  background('#a8d8f1');
-  noLoop(); // supaya tidak loop karena tidak perlu
-  img = createImage(300, 200);
-  img.loadPixels();
-  img.setFrame
 }
 
 function draw() {
+  var s = second();
+  background('#a8d8f1');
   // gambar segi enam dengan warna hitam
   fill('#232323');
   noStroke();
-  polygon(center, center, 300, 6);
+  polygon(width / 2, width / 2, width / 2, 6);
 
   strokeWeight(2); // tebal garis 2px
-  stroke('#73d245');
-  noFill(); // tanpa warna fill
-  // kolom tengah, 5 lingkaran saling berpotongan
-  // dimana pusat lingkaran yang berdekatan (atas bawah) akan berjarak sebesar radius lingkaran tetangga
-  circle(center, center - radius, radius);
-  circle(center, center - radius / 2, radius);
-  circle(center, center, radius); // pusat semua lingkaran
-  circle(center, center + radius / 2, radius);
-  circle(center, center + radius, radius);
+  push();
+    translate(width / 2, height / 2); // pindah posisi pusat ke tengah
+    rotate(radians(s * 6)); // putar kelipatan 6
+    stroke('#73d245');
+    noFill(); // tanpa warna fill
+    // kolom tengah, 5 lingkaran saling berpotongan
+    // dimana pusat lingkaran yang berdekatan (atas bawah) akan berjarak sebesar radius lingkaran tetangga
+    circle(center, center - radius, radius);
+    circle(center, center - radius / 2, radius);
+    circle(center, center, radius); // pusat semua lingkaran
+    circle(center, center + radius / 2, radius);
+    circle(center, center + radius, radius);
 
-  stroke('#3283cc');
-  // kolom kanan
-  circle(center + radius / 2 - radius / 16, center - radius / 2 - radius / 4, radius);
-  circle(center + radius / 2 - radius / 16, center - radius / 4, radius);
-  circle(center + radius / 2 - radius / 16, center + radius / 4, radius);
-  circle(center + radius / 2 - radius / 16, center + radius / 2 + radius / 4, radius);
+    stroke('#3283cc');
+    // kolom kanan
+    circle(center + radius / 2 - radius / 16, center - radius / 2 - radius / 4, radius);
+    circle(center + radius / 2 - radius / 16, center - radius / 4, radius);
+    circle(center + radius / 2 - radius / 16, center + radius / 4, radius);
+    circle(center + radius / 2 - radius / 16, center + radius / 2 + radius / 4, radius);
 
-  stroke('#d61b3a');
-  // kolom kiri
-  circle(center - radius / 2 + radius / 16, center - radius / 2 - radius / 4, radius);
-  circle(center - radius / 2 + radius / 16, center - radius / 4, radius);
-  circle(center - radius / 2 + radius / 16, center + radius / 4, radius);
-  circle(center - radius / 2 + radius / 16, center + radius / 2 + radius / 4, radius);
+    stroke('#d61b3a');
+    // kolom kiri
+    circle(center - radius / 2 + radius / 16, center - radius / 2 - radius / 4, radius);
+    circle(center - radius / 2 + radius / 16, center - radius / 4, radius);
+    circle(center - radius / 2 + radius / 16, center + radius / 4, radius);
+    circle(center - radius / 2 + radius / 16, center + radius / 2 + radius / 4, radius);
 
-  stroke('#f618af');
-  // kolom paling kanan
-  circle(center + radius - radius / 8, center - radius / 2, radius);
-  circle(center + radius - radius / 8, center, radius);
-  circle(center + radius - radius / 8, center + radius / 2, radius);
+    stroke('#f618af');
+    // kolom paling kanan
+    circle(center + radius - radius / 8, center - radius / 2, radius);
+    circle(center + radius - radius / 8, center, radius);
+    circle(center + radius - radius / 8, center + radius / 2, radius);
 
-  stroke('#d6d226');
-  // kolom paling kiri
-  circle(center - radius + radius / 8, center - radius / 2, radius);
-  circle(center - radius + radius / 8, center, radius);
-  circle(center - radius + radius / 8, center + radius / 2, radius);
+    stroke('#d6d226');
+    // kolom paling kiri
+    circle(center - radius + radius / 8, center - radius / 2, radius);
+    circle(center - radius + radius / 8, center, radius);
+    circle(center - radius + radius / 8, center + radius / 2, radius);
+  pop();
 
-  sideDecor(); // dekorasi di kiri bawah
+  sideDecor(); // dekorasi di kiri
 
-  translate(600 - 60, 0); // pindah nilai 0 sumbu x ke 600-60
-  sideDecor(); // dekorasi di kanan atas
-
-  // translate(0, 300); // pindah nilai 0 sumbu y ke 300
-  // sideDecor(); // dekorasi di kanan bawah
-
-  translate(-600 + 60, 0); // reset posisi translasi
+   // dekorasi yang sama tapi dipindah ke kanan bawah dan diputar 180 derajat
+  push();
+    translate(600, 600);
+    rotate(radians(180));
+    sideDecor();
+  pop();
 
   // untuk membuat bukit bukit di bawah
+  // nilai y bukit bawah akan berkurang sampai 600
+  yHillsBottom -= 1 * rate;
+  if (yHillsBottom < 600) {
+    yHillsBottom = 600;
+  }
   for (let i = 0; i < size; i++) {
-    hills(i, 600);
+    hills(i, yHillsBottom);
   }
 
   // untuk membuat bukit bukit di atas
+  // nilai y bukit atas akan bertambah sampai 0
+  yHillsTop += 1 * rate;
+  if (yHillsTop > 0) {
+    yHillsTop = 0;
+  }
   for (let i = 0; i < size; i++) {
-    hills(i, 0);
+    hills(i, yHillsTop);
   }
 
   // membuat text
@@ -137,7 +147,7 @@ function sideDecor() {
   beginShape();
   vertex(0, 300 - 95 - 26 - 18 - 16 - 14 - 19);
   vertex(60, 300 - 42 - 48 - 35 - 30 - 30 - 34);
-  vertex(60, 300 + 42 + 48 + 35 + 30 + 30); 
+  vertex(60, 300 + 42 + 48 + 35 + 30 + 30);
   vertex(60, 300 + 42 + 48 + 35 + 30 + 30 + 34);
   vertex(0, 300 + 95 + 26 + 18 + 16 + 14 + 19);
   vertex(0, 300 + 95 + 26 + 18 + 16 + 14);
@@ -241,7 +251,7 @@ function hills(x, y) {
   // jika y bernilai 0 ubah nilai nya menjadi positif
   // sehingga nilai randomnya akan ke arah bawah
   // digunakan untuk membuat bukit diatas
-  if (y === 0) {
+  if (y <= 0) {
     b = b * -1;
     c = c * -1;
     d = d * -1;
