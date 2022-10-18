@@ -4,7 +4,8 @@ const center = 0; // untuk pusat lingkaran awalnya di 0,0
 const radius = 86;
 var yHillsBottom = 600 + 90; // posisi awal bukit dibawah (diluar frame)
 var yHillsTop = 0 - 90; // posisi awal 
-var rate = 7;
+const rate = 4;
+var degree = 0;
 
 function setup() {
   createCanvas(size, size); // buat ukuran kotak
@@ -13,55 +14,30 @@ function setup() {
 function draw() {
   var s = second();
   background('#a8d8f1');
-  // gambar segi enam dengan warna hitam
-  fill('#232323');
-  noStroke();
-  polygon(width / 2, width / 2, width / 2, 6);
-
   strokeWeight(2); // tebal garis 2px
+  // gambar segi enam dengan warna hitam
+  // fill('#232323');
+  noStroke();
+  
   push();
+    fill(0);
+    polygon(width / 2, width / 2, width / 2, 6);
     translate(width / 2, height / 2); // pindah posisi pusat ke tengah
-    rotate(radians(s * 6)); // putar kelipatan 6
-    stroke('#73d245');
-    noFill(); // tanpa warna fill
-    // kolom tengah, 5 lingkaran saling berpotongan
-    // dimana pusat lingkaran yang berdekatan (atas bawah) akan berjarak sebesar radius lingkaran tetangga
-    circle(center, center - radius, radius);
-    circle(center, center - radius / 2, radius);
-    circle(center, center, radius); // pusat semua lingkaran
-    circle(center, center + radius / 2, radius);
-    circle(center, center + radius, radius);
+    rotate(radians(degree)); // putar kelipatan 6
+    flowerOfLife(center, radius, 255);
+    degree += 1 * rate;
+  pop();
 
-    stroke('#3283cc');
-    // kolom kanan
-    circle(center + radius / 2 - radius / 16, center - radius / 2 - radius / 4, radius);
-    circle(center + radius / 2 - radius / 16, center - radius / 4, radius);
-    circle(center + radius / 2 - radius / 16, center + radius / 4, radius);
-    circle(center + radius / 2 - radius / 16, center + radius / 2 + radius / 4, radius);
-
-    stroke('#d61b3a');
-    // kolom kiri
-    circle(center - radius / 2 + radius / 16, center - radius / 2 - radius / 4, radius);
-    circle(center - radius / 2 + radius / 16, center - radius / 4, radius);
-    circle(center - radius / 2 + radius / 16, center + radius / 4, radius);
-    circle(center - radius / 2 + radius / 16, center + radius / 2 + radius / 4, radius);
-
-    stroke('#f618af');
-    // kolom paling kanan
-    circle(center + radius - radius / 8, center - radius / 2, radius);
-    circle(center + radius - radius / 8, center, radius);
-    circle(center + radius - radius / 8, center + radius / 2, radius);
-
-    stroke('#d6d226');
-    // kolom paling kiri
-    circle(center - radius + radius / 8, center - radius / 2, radius);
-    circle(center - radius + radius / 8, center, radius);
-    circle(center - radius + radius / 8, center + radius / 2, radius);
+  push();
+  translate(width / 2, height / 2); // pindah posisi pusat ke tengah
+  blendMode("darken");
+  gradient(0);
+  blendMode(BLEND);
   pop();
 
   sideDecor(); // dekorasi di kiri
 
-   // dekorasi yang sama tapi dipindah ke kanan bawah dan diputar 180 derajat
+  // dekorasi yang sama tapi dipindah ke kanan bawah dan diputar 180 derajat
   push();
     translate(600, 600);
     rotate(radians(180));
@@ -93,6 +69,43 @@ function draw() {
   text('Vauwez Sam El Fareez', 10, 20);
   text('2009106054', 10, 35);
 
+}
+
+// fungsi untuk membuat flower of life (lingkaran-lingkaran ditengah)
+function flowerOfLife(center, radius, stroke_color) {
+  noFill(); // tanpa warna fill
+  stroke(stroke_color);
+  // kolom tengah, 5 lingkaran saling berpotongan
+  // dimana pusat lingkaran yang berdekatan (atas bawah) akan berjarak sebesar radius lingkaran tetangga
+  circle(center, center - radius, radius);
+  circle(center, center - radius / 2, radius);
+  circle(center, center, radius); // pusat semua lingkaran
+  circle(center, center + radius / 2, radius);
+  circle(center, center + radius, radius);
+
+  // kolom kanan
+  circle(center + radius / 2 - radius / 16, center - radius / 2 - radius / 4, radius);
+  circle(center + radius / 2 - radius / 16, center - radius / 4, radius);
+  circle(center + radius / 2 - radius / 16, center + radius / 4, radius);
+  circle(center + radius / 2 - radius / 16, center + radius / 2 + radius / 4, radius);
+
+  // kolom kiri
+  circle(center - radius / 2 + radius / 16, center - radius / 2 - radius / 4, radius);
+  circle(center - radius / 2 + radius / 16, center - radius / 4, radius);
+  circle(center - radius / 2 + radius / 16, center + radius / 4, radius);
+  circle(center - radius / 2 + radius / 16, center + radius / 2 + radius / 4, radius);
+
+  // kolom paling kanan
+  circle(center + radius - radius / 8, center - radius / 2, radius);
+  circle(center + radius - radius / 8, center, radius);
+  circle(center + radius - radius / 8, center + radius / 2, radius);
+
+  // kolom paling kiri
+  circle(center - radius + radius / 8, center - radius / 2, radius);
+  circle(center - radius + radius / 8, center, radius);
+  circle(center - radius + radius / 8, center + radius / 2, radius);
+
+  noStroke();
 }
 
 // fungsi untuk membuat polygon
@@ -270,3 +283,18 @@ function hills(x, y) {
   line(x, y, x, y + b);
 }
 
+// fungsi untuk menghasilkan linear gradient yang melingkar
+function gradient(start) {
+  colorMode(HSB,360,100,100,100);
+
+  for (let i=0; i<=360; i+=0.5) { // loop r
+    push();
+    rotate(radians(i));
+    
+    stroke(i, 100, 100);
+    line(start, start, (start+width*sqrt(2))/2, start);
+    pop();
+    //deg+=0.1;
+  }
+  colorMode(RGB, 255);
+}
