@@ -4,8 +4,8 @@ const center = 0; // untuk pusat lingkaran awalnya di 0,0
 const radius = 86;
 var yHillsBottom = 600 + 90; // posisi awal bukit dibawah (diluar frame)
 var yHillsTop = 0 - 90; // posisi awal 
-const rate = 4;
-var degree = 0;
+const rate = 4; // faktor laju pergerakan
+var degree = 0; // derajat untuk perputaran
 
 function setup() {
   createCanvas(size, size); // buat ukuran kotak
@@ -17,26 +17,25 @@ function draw() {
   strokeWeight(2); // tebal garis 2px
   // gambar segi enam dengan warna hitam
   // fill('#232323');
+  fill(0);
+  polygon(width / 2, width / 2, width / 2, 6);
   noStroke();
-  
-  push();
-    fill(0);
-    polygon(width / 2, width / 2, width / 2, 6);
-    translate(width / 2, height / 2); // pindah posisi pusat ke tengah
-    rotate(radians(degree)); // putar kelipatan 6
-    flowerOfLife(center, radius, 255);
-    degree += 1 * rate;
-  pop();
 
   push();
-  translate(width / 2, height / 2); // pindah posisi pusat ke tengah
-  blendMode("darken");
-  gradient(0);
-  blendMode(BLEND);
+    translate(width / 2, height / 2); // pindah posisi pusat ke tengah
+    rotate(radians(degree)); // putar flowerOfLife
+    flowerOfLife(center, radius, 255);
+    degree += 1 * rate; // increment derajat dikali factor laju nya
+  pop();
+
+  // push matrix agar blend hanya diterapkan untuk object gradient saja
+  push();
+    translate(width / 2, height / 2); // pindah posisi pusat ke tengah
+    blendMode("darken"); // agar warna gradient blend dengan warna putih dan hilang pada warna hitam
+    gradient(0); // gradient yang di-blend
   pop();
 
   sideDecor(); // dekorasi di kiri
-
   // dekorasi yang sama tapi dipindah ke kanan bawah dan diputar 180 derajat
   push();
     translate(600, 600);
@@ -285,16 +284,21 @@ function hills(x, y) {
 
 // fungsi untuk menghasilkan linear gradient yang melingkar
 function gradient(start) {
-  colorMode(HSB,360,100,100,100);
+  colorMode(HSB, 360, 100, 100, 100); // untuk menghasilkan spektrum warna
 
-  for (let i=0; i<=360; i+=0.5) { // loop r
-    push();
-    rotate(radians(i));
-    
-    stroke(i, 100, 100);
-    line(start, start, (start+width*sqrt(2))/2, start);
+  // buat line dengan warna berurutan sesuai dengan spektrum warna
+  // dan rotasi nya bertambah 0.5 derajat
+  // sehingga dihasilkan linear gradient yang melingkar
+  for (let i = 0; i <= 360; i += 0.5) {
+    push(); // push matrix agar hanya line yang berotasi
+      rotate(radians(i));
+      stroke(i, 100, 100); // increment nilai hue hingga 360
+
+      // karena line akan dirotasi dengan pusat ditengah, supaya seluruh canvas terpenuhi
+      // maka jarak terpanjang adalah dari tengah ke salah satu sudut (setengah diagonal)
+      // untuk persegi, panjang diagonal adalah sisi kali akar 2.
+      line(start, start, (start + width * sqrt(2)) / 2, start); // buat line dengan panjang setengah diagonal
     pop();
-    //deg+=0.1;
   }
-  colorMode(RGB, 255);
+  colorMode(RGB, 255); // kembalikan mode warna
 }
