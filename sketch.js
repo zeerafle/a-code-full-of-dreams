@@ -6,6 +6,7 @@ var yHillsBottom = 600 + 90; // posisi awal bukit dibawah (diluar frame)
 var yHillsTop = 0 - 90; // posisi awal 
 const rate = 4; // faktor laju pergerakan
 var degree = 0; // derajat untuk perputaran
+var initialZoom = 7
 
 function setup() {
   createCanvas(size, size); // buat ukuran kotak
@@ -23,16 +24,21 @@ function draw() {
 
   push();
     translate(width / 2, height / 2); // pindah posisi pusat ke tengah
-    rotate(radians(degree)); // putar flowerOfLife
-    flowerOfLife(center, radius, 255);
-    degree += 1 * rate; // increment derajat dikali factor laju nya
+    scale(initialZoom); // zoom flowerOfLife
+    // jika lebih dari 1 kurangi nilainya sebesar 0.2
+    if (initialZoom > 1) {
+      initialZoom -= 0.2;
+    }
+    flowerOfLife(center, radius, 255); // lingkaran ditengah
   pop();
 
   // push matrix agar blend hanya diterapkan untuk object gradient saja
   push();
     translate(width / 2, height / 2); // pindah posisi pusat ke tengah
     blendMode("darken"); // agar warna gradient blend dengan warna putih dan hilang pada warna hitam
+    rotate(radians(degree)); // putar gradient nya
     gradient(0); // gradient yang di-blend
+    degree += 1 * rate; // increment derajat dikali factor laju nya
   pop();
 
   sideDecor(); // dekorasi di kiri
